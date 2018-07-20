@@ -1,26 +1,34 @@
-TARGET=calc
-C_SOURCES=*.c
+TARGET := calc
+C_SOURCES := $(shell ls *.c)#*.c
 OBJS := $(patsubst %.c,%.o,$(C_SOURCES))
+CC := gcc
+C_FLAGS := -c
 
 all: clean calc test
-	
-calc:
+
+#Add dependancy and automate compile step	
+$(TARGET):$(OBJS) 
 	@echo 'list of all .c files:'
 	@echo $(C_SOURCES)
-	@echo 'compiling .c files...'
-	gcc -c $(C_SOURCES)
 	@echo ' '
 	@echo 'List of all object files:'
 	@echo $(OBJS)
 	@echo 'Building the binary file...'
-	gcc $(OBJS) -o $(TARGET)
+	$(CC) $(OBJS) -o $(TARGET)
 	@echo ' '
 
-test:
-	./$(TARGET) 2 3
+#Add a seperate automated compile target
+%.o: %.c 
+	@echo 'compiling file $<'
+	$(CC) $(C_FLAGS) $< -o $@
+	@echo ' '
+
+#add a dependancy
+test: $(TARGET) 
+	./$(TARGET)
 
 clean:
-	rm -f $(TARGET) *.o #wildcards
+	rm -f $(TARGET) *.o
 
 
 
